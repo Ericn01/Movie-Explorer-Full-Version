@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Login Page</title>
+    </head>
+    <body>
+    <% if (locals.error) { %>
+        <p><%= locals.error %></p>
+    <% } %>
+        <form method="post" action="/login">
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" value="al@ace.ca">
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="mypassword">
+            <br>
+            <input type="submit" value="Login">
+        </form>
+    </body>
+</html>
