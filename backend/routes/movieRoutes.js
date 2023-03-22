@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { getAllMovies, getMovieById, getMoviesBetweenRatings, getMoviesByText, getNumMovies, getMoviesBetweenYears, getMoviesByGenre } = require('../controllers/movieController');
+const { getAllMovies, getMovieById, getMoviesBetweenRatings, getMoviesByText, getNumMovies, getMoviesBetweenYears, getMoviesByGenre, 
+        getMoviesAboveRating, getMoviesBelowRating, getMoviesAboveYear, getMoviesBelowYear} = require('../controllers/movieController');
 
 // Route to get all movies
 router.get('/', getAllMovies);
@@ -24,6 +25,17 @@ router.get('/ratings/:min/:max', getMoviesBetweenRatings);
 router.get('/title/:text', getMoviesByText);
 
 // Route to get all movies with the specified genre name
-router.get('/genre/name', getMoviesByGenre);
+router.get('/genre/:name', getMoviesByGenre);
 
+/* OTHER ROUTES (Not specified by assignment spec) */
+
+// Route to get all movies below a certain rating 
+router.get('/ratingsLess/:max', getMoviesBelowRating);
+// Route to get all movies above a certain rating
+router.get('/ratingsGreater/:min', getMoviesAboveRating);
+// Same is done with minimum and maximum values for year
+router.get('/yearLess/:max', getMoviesBelowYear);
+router.get('/yearGreater/:min', getMoviesAboveYear);
+
+// Export router
 module.exports = router;

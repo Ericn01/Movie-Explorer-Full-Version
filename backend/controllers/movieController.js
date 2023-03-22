@@ -4,7 +4,7 @@ const Movie = require('../models/movieModel')
 // @route GET /api/movies/
 // @access Private
 const getAllMovies = asyncHandler(async (req, res) => {
-    const movies = await Movie.find().sort({title: 1});
+    const movies = await Movie.find({}).sort({title: 1});
     res.status(200).json(movies);
 });
 // @desc retrieves the first num movies
@@ -21,20 +21,23 @@ const getNumMovies = asyncHandler(async (req, res) => {
 // @route GET /api/movies/year/min/max
 // @access Private
 const getMoviesBetweenYears = asyncHandler(async (req, res) => {
-    const min = parseInt(req.params.min);
-    const max = parseInt(req.params.max);
-    minIsGreaterThanMaxCheck(min, max, req, "year");
-    const yearFilteredMovies = await Movie.find({ year: { $gte: min, $lte: max } }).sort({title: 1});
+    const minYear = new Date(`${req.params.min}-01-01`); // First day of the year
+    const maxYear = new Date(`${req.params.max}-01-01`); // Last day of the year.
+    console.log(minYear, maxYear);
+    minIsGreaterThanMaxCheck(minYear, maxYear, res, "year");
+    const yearFilteredMovies = await Movie.find({release_date: { $gte: minYear, $lte: maxYear }}).sort({title: 1});
+    noMatchesFoundCheck(yearFilteredMovies, res);
     res.status(200).json(yearFilteredMovies);
 });
 // @desc retrieve movies that fall within the given years range
 // @route GET /api/movies/ratings/min/max
 // @access Private
 const getMoviesBetweenRatings = asyncHandler(async (req, res) => {
-    const min = parseFloat(req.params.min);
-    const max = parseFloat(req.params.max);
-    minIsGreaterThanMaxCheck(min, max, req, "rating");
-    const ratingFilteredMovies = await Movie.find({ rating: { $gte: min, $lte: max } }).sort({title: 1});
+    const min = Number(req.params.min);
+    const max = Number(req.params.max);
+    minIsGreaterThanMaxCheck(min, max, res, "rating");
+    const ratingFilteredMovies = await Movie.find({'ratings.average': { $gte: min, $lte: max } }).sort({title: 1});
+    noMatchesFoundCheck(ratingFilteredMovies);
     res.status(200).json(ratingFilteredMovies);
 });
 // @desc retrieves movies that have a title that includes the given text
@@ -42,18 +45,19 @@ const getMoviesBetweenRatings = asyncHandler(async (req, res) => {
 // @access Private
 const getMoviesByText = asyncHandler(async (req, res) => {
     const text = req.params.text.toLowerCase();
-    const titleFilteredMovies = await Movie.find({ title: { $regex: `.*${text}.*`, $options: 'i' } });
+    const titleFilteredMovies = await Movie.find({title: { $regex: `.*${text}.*`, $options: 'i' } });
     noMatchesFoundCheck(titleFilteredMovies, res);
     res.status(200).json(titleFilteredMovies);
 });
 // @desc retrieves movies that have a title that includes the given text
-// @route GET /api/movies/title/text
+// @route GET /api/movies/genre/name
 // @access Private
 const getMoviesByGenre = asyncHandler(async (req, res) => {
-    const genreName = req.params.name.toLowerCase().trim();
-    const genreFilteredMovies = await Movie.find({ name: genreName });
-    noMatchesFoundCheck(titleFilteredMovies, res);
-    res.status(200).json(titleFilteredMovies);
+    const genreName = req.params.name;
+    // For this DB query, we need to access movieObj[details][genres][name].
+    const genreFilteredMovies = await Movie.find({'details.genres.name': genreName});
+    noMatchesFoundCheck(genreFilteredMovies, res);
+    res.status(200).json(genreFilteredMovies);
 })
 // @desc retrieves the movie that has the given ID (not TMDB)
 // @route GET /api/movies/id
@@ -64,16 +68,65 @@ const getMovieById = asyncHandler(async (req, res) => {
     noMatchesFoundCheck(movie, res);
     res.status(200).json(movie);
 });
+// @desc retrieves the movie that has the given ID (not TMDB)
+// @route GET /api/movies/ratingsLess/:max
+// @access Private
+const getMoviesBelowRating = asyncHandler(async (req, res) => {
+    const max = Number(req.params.max);
+    invalidValueCheck(max, res); // Checks for NaN or a rating <0
+    const matches = await Movie.find({'ratings.average': {$lt: max}}).sort({title: 1});
+    noMatchesFoundCheck(matches);
+    res.status(200).json(matches);
+});
+
+// @desc retrieves the movie(s) that have an average rating less than the given value (minimum)
+// @route GET /api/movies/ratingsGreater/:min
+// @access Private
+const getMoviesAboveRating = asyncHandler(async (req, res) => {
+    const min = Number(req.params.min);
+    invalidValueCheck(min, res); // Checks for NaN or a rating <0
+    const matches = await Movie.find({'ratings.average': {$gt: min}}).sort({title: 1});
+    noMatchesFoundCheck(matches);
+    res.status(200).json(matches);
+});
+
+// @desc retrieves the movie(s) that were released before the given date.
+// @route GET /api/movies/yearLess/:max
+// @access Private
+const getMoviesBelowYear = asyncHandler(async (req, res) => {
+    const maxYear = new Date(`${req.params.max}-01-01`); // Start date
+    const matches = await Movie.find({release_date: {$lt: maxYear}}).sort({title: 1});
+    noMatchesFoundCheck(matches);
+    res.status(200).json(matches);
+});
+
+// @desc retrieves the movie(s) that were release after the given date.
+// @route GET /api/movies/yearGreater/:min
+// @access Private
+const getMoviesAboveYear = asyncHandler(async (req, res) => {
+    const minYear = new Date(`${req.params.min}-01-01`); 
+    console.log(minYear);
+    const matches = await Movie.find({release_date: {$gt: minYear}}).sort({title: 1});
+    noMatchesFoundCheck(matches);
+    res.status(200).json(matches);
+});
+
 // Checks to see if the minimum value entered is greater than max. 
 // If so, a 400 status code is sent (Bad Request) as min cannot be greater than max.
 const minIsGreaterThanMaxCheck = (min, max, res, attribute) => {
     if (min > max){
-        return res.status(400).json({error: `The minimum ${attribute} must be less than or greater than the maximum!`});
+        return res.status(400).json({error: `The minimum ${attribute} must be less than or equal to the maximum!`});
     }
 }
+// Checks to see if any matches are returned from the query
 const noMatchesFoundCheck = (results, res) => {
     if (!results || results.length === 0){
         return res.status(404).json({error: `No matches were found with the given criteria...`});
+    }
+}
+const invalidValueCheck = (value, res) => {
+    if (value < 0 || isNaN(value)){
+        return res.status(400).json({error: `The value you inputted: ${value} is invalid. Please only enter positive values...`});
     }
 }
 /* Export all the controller functions */
@@ -84,5 +137,9 @@ module.exports = {
     getMoviesByText,
     getMoviesBetweenRatings,
     getMovieById,
-    getMoviesByGenre
+    getMoviesByGenre,
+    getMoviesAboveRating,
+    getMoviesBelowRating,
+    getMoviesAboveYear,
+    getMoviesBelowYear
 }
