@@ -4,15 +4,17 @@
   "version": "0.0.0",
   "type": "commonjs",
   "scripts": {
-    "dev": "vite frontend/src/App.jsx",
-    "build": "vite build",
+    "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
-    "preview": "vite preview"
+    "client": "npm start --prefix frontend"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.1.0",
     "mongoose": "^7.0.2"
   },

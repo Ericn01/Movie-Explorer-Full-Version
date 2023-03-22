@@ -1,22 +1,29 @@
 const express = require('express');
-const { getAllMovies, getMovieById, getMoviesBetweenRatings, getMoviesByText, getNumMovies, getMoviesBetweenYears } = require('../controllers/movieController');
-
-const app = express();
+const router = express.Router();
+const { getAllMovies, getMovieById, getMoviesBetweenRatings, getMoviesByText, getNumMovies, getMoviesBetweenYears, getMoviesByGenre } = require('../controllers/movieController');
 
 // Route to get all movies
-app.get('/api/movies', getAllMovies);
+router.get('/', getAllMovies);
 
 // Route to get the first num movies
-app.get('/api/movies/limit/:num', getNumMovies);
+router.get('/limit/:num', getNumMovies);
 
 // Route to get a single movie by id
-app.get('/api/movies/:id', getMovieById);
+router.get('/:id', getMovieById);
+
+// Same can be done for the IMBD route 
+router.get('/tmdb/:id', getMovieById);
 
 // Route to get all movies between min and max year
-app.get('/api/movies/year/:min/:max', getMoviesBetweenYears);
+router.get('/year/:min/:max', getMoviesBetweenYears);
 
 // Route to get all movies between min and max rating
-app.get('/api/movies/ratings/:min/:max', getMoviesBetweenRatings);
+router.get('/ratings/:min/:max', getMoviesBetweenRatings);
 
 // Route to get all movies with title containing text
-app.get('/api/movies/title/:text', getMoviesByText);
+router.get('/title/:text', getMoviesByText);
+
+// Route to get all movies with the specified genre name
+router.get('/genre/name', getMoviesByGenre);
+
+module.exports = router;
