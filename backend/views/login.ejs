@@ -4,11 +4,12 @@
         <meta charset="utf-8">
         <title>Login Page</title>
     </head>
-    <body>
-    <% if (locals.error) { %>
-        <p><%= locals.error %></p>
-    <% } %>
-        <form method="post" action="/login">
+    <body> 
+        <h1> Login </h1>
+        <% if (messages.error) {  %>
+            <%= messages.error %>
+        <% } %>
+        <form method="POST" action="/login">
             <label for="email">Email:</label>
             <input type="text" id="email" name="email" value="al@ace.ca">
             <br>

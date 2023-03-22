@@ -105,7 +105,6 @@ const getMoviesBelowYear = asyncHandler(async (req, res) => {
 // @access Private
 const getMoviesAboveYear = asyncHandler(async (req, res) => {
     const minYear = new Date(`${req.params.min}-01-01`); 
-    console.log(minYear);
     const matches = await Movie.find({release_date: {$gt: minYear}}).sort({title: 1});
     noMatchesFoundCheck(matches);
     res.status(200).json(matches);
@@ -115,18 +114,22 @@ const getMoviesAboveYear = asyncHandler(async (req, res) => {
 // If so, a 400 status code is sent (Bad Request) as min cannot be greater than max.
 const minIsGreaterThanMaxCheck = (min, max, res, attribute) => {
     if (min > max){
-        return res.status(400).json({error: `The minimum ${attribute} must be less than or equal to the maximum!`});
+        res.status(400)
+        throw new Error(`The minimum ${attribute} must be less than or equal to the maximum!`);
     }
 }
 // Checks to see if any matches are returned from the query
 const noMatchesFoundCheck = (results, res) => {
     if (!results || results.length === 0){
-        return res.status(404).json({error: `No matches were found with the given criteria...`});
+        res.status(404)
+        throw new Error("No matches were found with the given criteria...");
     }
 }
+// Checks to see if the given value is either less than 0 or NaN
 const invalidValueCheck = (value, res) => {
     if (value < 0 || isNaN(value)){
-        return res.status(400).json({error: `The value you inputted: ${value} is invalid. Please only enter positive values...`});
+        res.status(400);
+        throw new Error(`The value you inputted: ${value} is invalid. Please only enter positive values...`);
     }
 }
 /* Export all the controller functions */
