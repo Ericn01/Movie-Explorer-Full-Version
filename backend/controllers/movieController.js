@@ -21,11 +21,11 @@ const getNumMovies = asyncHandler(async (req, res) => {
 // @route GET /api/movies/year/min/max
 // @access Private
 const getMoviesBetweenYears = asyncHandler(async (req, res) => {
-    const minYear = new Date(`${req.params.min}-01-01`); // First day of the year
-    const maxYear = new Date(`${req.params.max}-01-01`); // Last day of the year.
+    const minYear = req.params.min; 
+    const maxYear = req.params.max;
     console.log(minYear, maxYear);
     minIsGreaterThanMaxCheck(minYear, maxYear, res, "year");
-    const yearFilteredMovies = await Movie.find({release_date: { $gte: minYear, $lte: maxYear }}).sort({title: 1});
+    const yearFilteredMovies = await Movie.find({release_date: { $gt: minYear, $lt: maxYear }}).sort({title: 1});
     noMatchesFoundCheck(yearFilteredMovies, res);
     res.status(200).json(yearFilteredMovies);
 });
@@ -36,7 +36,7 @@ const getMoviesBetweenRatings = asyncHandler(async (req, res) => {
     const min = Number(req.params.min);
     const max = Number(req.params.max);
     minIsGreaterThanMaxCheck(min, max, res, "rating");
-    const ratingFilteredMovies = await Movie.find({'ratings.average': { $gte: min, $lte: max } }).sort({title: 1});
+    const ratingFilteredMovies = await Movie.find({'ratings.average': { $gt: min, $lt: max } }).sort({title: 1});
     noMatchesFoundCheck(ratingFilteredMovies);
     res.status(200).json(ratingFilteredMovies);
 });
@@ -94,7 +94,7 @@ const getMoviesAboveRating = asyncHandler(async (req, res) => {
 // @route GET /api/movies/yearLess/:max
 // @access Private
 const getMoviesBelowYear = asyncHandler(async (req, res) => {
-    const maxYear = new Date(`${req.params.max}-01-01`); // Start date
+    const maxYear = req.params.max; // Maximum date/year
     const matches = await Movie.find({release_date: {$lt: maxYear}}).sort({title: 1});
     noMatchesFoundCheck(matches);
     res.status(200).json(matches);
@@ -104,7 +104,7 @@ const getMoviesBelowYear = asyncHandler(async (req, res) => {
 // @route GET /api/movies/yearGreater/:min
 // @access Private
 const getMoviesAboveYear = asyncHandler(async (req, res) => {
-    const minYear = new Date(`${req.params.min}-01-01`); 
+    const minYear = req.params.min; // Minimum date/year
     const matches = await Movie.find({release_date: {$gt: minYear}}).sort({title: 1});
     noMatchesFoundCheck(matches);
     res.status(200).json(matches);

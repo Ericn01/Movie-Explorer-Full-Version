@@ -60,8 +60,8 @@ const MovieFilter = ({genresList, setFilterResults, filterIsShown}) => {
             ratingGreater: "",
             ratingLowerBound:  "",
             ratingUpperBound: "",
+            numMoviesRetrieved: "",
         });
-        console.log(formData);
         const displayState = filterIsShown ? "block" : "hidden";
         const checkRadio = (e) => {setCheckedFilter(e.target.value)};
         const lessGreaterBetweenFilterSelection = (e) => {const selection = e.target.value;
@@ -109,9 +109,13 @@ const MovieFilter = ({genresList, setFilterResults, filterIsShown}) => {
                 }              
                 else {alert("Please select either 'greater' or 'less' for the rating selection")}
             }
+            else if (checkedFilter === 'movie-retrieval-select'){
+                queryEndpoint = `limit/${formData.numMoviesRetrieved}`;
+            }
             else{
                 alert("Please check a filter to begin!");
             }
+            console.log(queryEndpoint);
             queryMatches = await fetchFilterData(queryEndpoint);
             setFilterResults(queryMatches);
         }
@@ -122,6 +126,7 @@ const MovieFilter = ({genresList, setFilterResults, filterIsShown}) => {
                 <GenreFilterContainer name={"genre"} checkRadio={checkRadio} checkInputData={handleFormChange} genresList={genresList} formData={formData}/>
                 <TripleValueFilterContainer  name={"year"}  checkRadio={checkRadio} checkInputData={handleFormChange} formData={formData} setSubFilter={lessGreaterBetweenFilterSelection}/> 
                 <TripleValueFilterContainer name={"rating"} checkRadio={checkRadio} checkInputData={handleFormChange} formData={formData} setSubFilter={lessGreaterBetweenFilterSelection}/>
+                <RetrieveNumMoviesFilter checkRadio={checkRadio} checkInputData={handleFormChange} formData={formData} />
                 <div className="w-full flex justify-evenly mt-4"> 
                     <button className="w-[135px] text-white font-medium flex justify-center p-2 border rounded-md shadow-sm text-sm bg-violet-500 hover:bg-violet-700" onClick={filterMovies}> Filter </button>
                     <button className="w-[135px] text-white font-medium flex justify-center p-2 border  rounded-md shadow-sm text-sm bg-red-500 hover:bg-red-700" onClick={() => setFormData({title: "",genre: "",yearLess: "",yearGreater: "",ratingLess: "",ratingGreater: "", yearLowerBound: "", yearUpperBound: "", ratingUpperBound: "", ratingLowerBound: ""})} > Clear </button>
@@ -191,8 +196,19 @@ const TripleValueFilterContainer = (props) => {
         );
 }
 // Creating a slider for the option to retrieve N movies
-const retrieveNumMoviesFilter = (props) => {
-
+const RetrieveNumMoviesFilter = (props) => {
+    const retrievalValue = props.formData.numMoviesRetrieved;
+    return (
+            <div className="my-8 font-normal text-gray-700 dark:text-gray-400">
+                <input type="radio" name="filter-select" value='movie-retrieval-select' onChange={props.checkRadio}/>
+                <span className="text-sm font-medium text-gray-800 uppercase"> Number of Movies </span>
+                <aside className="ml-10 flex">
+                    <span className='mr-3 text-gray-600 font-semibold'> 1 </span>
+                    <input className='w-[50%] h-[20px]' title={retrievalValue} type="range" max={200} min={1} name="numMoviesRetrieved" value={retrievalValue} onChange={props.checkInputData} />
+                    <span className='ml-3 text-gray-600 font-semibold'> 200 </span>
+                </aside>
+            </div>
+    );
 }
 
 // ---------------------------------------------------------------- MATCHES SECTION ------------------------------------------------------------------------------------------
