@@ -1,17 +1,14 @@
 // Express is the backend web framework
-const express = require('express');
-const cors = require('cors');
-const dotenv = require("dotenv").config();
-const passport = require('passport');
-const flash = require('express-flash');
-const session = require('express-session');
+const express    = require('express');
+const cors       = require('cors');
+const dotenv     = require("dotenv").config();
+const passport   = require('passport');
+const flash      = require('express-flash');
+const session    = require('express-session');
+const bodyParser = require('body-parser');
 const { initUserPassport } = require("./passport-config");
 
-// User passport authentication
-initUserPassport(passport, 
-    email => users.find(user => user.email === email),
-    id => users.find(id => user.id === id)
-);
+
 
 // Initializing the application and port 
 const app = express();
@@ -23,20 +20,33 @@ const connectDB = require('./config/db.js');
 connectDB();
 
 // Enabling the app to use EJS as a view engine
-app.set('view-engine', 'ejs');
+app.set('view engine', 'ejs');
+app.set('views', 'backend/views');
 // Middleware
 app.use(cors()); // Since frontend and backend won't be hosted on the same server, CORS will be enabled
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(flash());
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
 }))
-app.use(passport.initialize());
-app.use(passport.session());
+
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+
+// Parses form data
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
 app.use('/api/movies', require('./routes/movieRoutes'));
-app.use('/', require('./routes/usersRoutes'));
+app.use('/users', require('./routes/usersRoutes'));
 
 app.listen(port, () => console.log(`Server Started on port ${port}`));
+
+// User passport authentication
+initUserPassport(passport, 
+    email => users.find(user => user.email === email),
+    id => users.find(id => user.id === id)
+);

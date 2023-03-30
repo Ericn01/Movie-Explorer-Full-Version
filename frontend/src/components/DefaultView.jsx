@@ -7,12 +7,24 @@ import { BsArrowLeftCircle, BsArrowRightCircle, BsArrowLeftCircleFill, BsArrowRi
 
 /* Container for the entire default view */
 const DefaultView = ({homeMatches, favorites, addFavorite, movieDetails, genres, setParentMovieMatches, removeFavoriteMovie, setModalView}) => {
+    // State for what components are shown
     const [filterIsShown, setFilterIsShown] = useState(true);
     const [favoritesIsShown, setFavoriteIsShown] = useState(true);
+    // Arrows direction state
     const [rightSideArrowDirection, setRightSideArrowDirection] = useState(true);
     const [rightIsHidingContent, setRightIsHidingContent] = useState(false);
     const [leftIsHidingContent, setLeftIsHidingContent] = useState(false);
     const [leftSideArrowDirection, setLeftSideArrowDirection] = useState(false);
+    // Sort Attribute & Sort Order State
+    const [sortAttribute, setSortAttribute] = useState("title");
+    const [sortOrder, setSortOrder] = useState("ascending"); // true -> asc, false -> desc
+    // Change the column results
+    function changeColumnOrder (selectedAttribute) {
+        const columnSortOrder = selectedAttribute === sortAttribute && sortOrder === 'ascending' ? 'descending' : 'ascending'; // switches the sort order for the selected column
+        setSortAttribute(selectedAttribute);
+        setSortOrder(columnSortOrder);
+        sortColumnOrder(sortAttribute, sortOrder);
+    }
     function setSectionDisplay(sectionName, id){
         sectionName === 'filter' ? setFilterIsShown(!filterIsShown) : setFavoriteIsShown(!favoritesIsShown);
         if (id === 'right'){
@@ -27,7 +39,7 @@ const DefaultView = ({homeMatches, favorites, addFavorite, movieDetails, genres,
         <div>
             <Header setModalView={setModalView}/>
             <section className="flex justify-between m-12">
-                <MovieFilter genresList={genres} setFilterResults={setParentMovieMatches} filterIsShown={filterIsShown}/>
+                <MovieFilter genresList={genres} setFilterResults={setParentMovieMatches} filterIsShown={filterIsShown} changeColumnOrder={changeColumnOrder} />
                 <ShowSection direction={leftSideArrowDirection} section={"filter"} setSectionDisplay={setSectionDisplay} id={"left"} isHidingContent={leftIsHidingContent}/>
                 <MovieMatches matches={homeMatches} favoriteMovies={favorites} addFavorite={addFavorite} setMovieDetails={movieDetails} setSortedMatches={setParentMovieMatches} />
                 <ShowSection direction={rightSideArrowDirection} section={'favorites'} setSectionDisplay={setSectionDisplay} id={"right"} isHidingContent={rightIsHidingContent}/>
@@ -46,7 +58,8 @@ const fetchFilterData = async (endpoint) => {
 }
 // -------------------------------------------------------------- FILTERS SECTION ---------------------------------------------------------------------------------------------
 /* The Movie filter allows the user to display certain results depending on their search criteria */
-const MovieFilter = ({genresList, setFilterResults, filterIsShown}) => {
+const MovieFilter = ({genresList, setFilterResults, filterIsShown, changeColumnOrder}) => {
+    
         const [checkedFilter, setCheckedFilter] = useState("");
         const [lessGreaterBetweenFilter, setLessGreaterBetweenFilter] = useState(""); // Holds the radio values for the less and greater than buttons
         const [formData, setFormData] = useState({
@@ -62,6 +75,7 @@ const MovieFilter = ({genresList, setFilterResults, filterIsShown}) => {
             ratingUpperBound: "",
             numMoviesRetrieved: "",
         });
+        
         const displayState = filterIsShown ? "block" : "hidden";
         const checkRadio = (e) => {setCheckedFilter(e.target.value)};
         const lessGreaterBetweenFilterSelection = (e) => {const selection = e.target.value;
@@ -277,8 +291,17 @@ const MovieMatches = (props) => {
             <section className='mx-8'>
                 <div className='max-h-[85vh] overflow-y-scroll rounded-md shadow-md'>
                 <h2 className='text-center text-lg tracking-tighter font-semibold mb-2 text-gray-700'> {` We Found ${matchesData.length} Matches! `} </h2>
-                <table className="table-auto w-full basis-1/2"> 
-                    <TableHead columns={[{name: "Poster", id:"poster", sortable:false}, {name: "Title", id:"title", sortable:true}, {name: "Release Year", id:"release-year", sortable:true}, {name: "Average Rating", id:"average-rating", sortable:true}, {name: "Popularity", id:"popularity", sortable:true}, {name:"Favorites", id:"favorite", sortable:false}, {name: "Details", id:"details", sortable:false}]} sortColumnOrder={sortMovieColumns} /> 
+                <table className="w-full basis-1/2"> 
+                    <TableHead columns={
+                        [
+                            {name: "Poster", id:"poster", sortable:false}, 
+                            {name: "Title", id:"title", sortable:true}, 
+                            {name: "Year", id:"release-year", sortable:true}, 
+                            {name: "Rating", id:"average-rating", sortable:true}, 
+                            {name: "Popularity", id:"popularity", sortable:true}, 
+                            {name:"Favorites", id:"favorite", sortable:false}, 
+                            {name: "Details", id:"details", sortable:false}
+                        ]} sortColumnOrder={sortMovieColumns} /> 
                     <tbody className="divide-y divide-gray-300">
                         {matchesData.map ( (m, index) => <MovieRow key={m.id} movieData={m} i={index} favorites={props.favoriteMovies} addFavorite={props.addFavorite} setMovieDetails={props.setMovieDetails} /> )}
                     </tbody>
@@ -299,20 +322,12 @@ const MovieMatches = (props) => {
     }
 }
 /* Table headers are contained here. */
-const TableHead = ({columns, sortColumnOrder}) => {
-    const [sortAttribute, setSortAttribute] = useState("title");
-    const [sortOrder, setSortOrder] = useState("ascending"); // true -> asc, false -> desc
-    function changeColumnOrder (selectedAttribute) {
-        const columnSortOrder = selectedAttribute === sortAttribute && sortOrder === 'ascending' ? 'descending' : 'ascending'; // switches the sort order for the selected column
-        setSortAttribute(selectedAttribute);
-        setSortOrder(columnSortOrder);
-        sortColumnOrder(sortAttribute, sortOrder);
-    }
+const TableHead = ({columns, sortColumnOrder}) => {  
     return (
         <thead className='bg-violet-300 border-b-2 border-gray-200'>
             <tr>
                 {columns.map((column) => column.sortable ? 
-                <th key={column.id} className="p-4 text-md font-bold tracking-tight hover:cursor-pointer text-left" id={column.id} onClick={() => changeColumnOrder(column.id)}title="Sort Functionality Coming Soon!"> {column.name}</th> : 
+                <th key={column.id} className="p-4 text-md font-bold tracking-tight hover:cursor-pointer text-left relative" id={column.id} onClick={() => changeColumnOrder(column.id)}title="Sort Functionality Coming Soon!"> {column.name} <span className='flex-col absolute left-[20px] bottom-2 m-auto'> <div> ▲ </div>  <div> ▼ </div>  </span></th> : 
                 <th key={column.id} className="p-4 text-md font-bold text-left" id={column.id}> {column.name} </th>)}
             </tr>
         </thead>
@@ -325,7 +340,7 @@ const FavoriteListItem = (props) => {
     const posterPath = `https://image.tmdb.org/t/p/w185${props.poster}`;
     const movieTitle = props.title;
     return(
-        <ul className='w-[225px] px-6 py-3 bg-slate-100 border border-gray-200 rounded-lg shadow h-max mb-6'>
+        <ul className='w-[250px] px-6 py-3 bg-slate-100 border border-gray-200 rounded-lg shadow h-max mb-6'>
             <li className='mb-5 text-lg font-semibold text-gray-900'> #{props.favIndex + 1}. {movieTitle} </li>
             <li className='relative'> 
                 <Link to="/details"> <img className="shadow border border-gray-200 rounded-sm cursor-pointer" title='View Movie Details' src={posterPath} alt="movie poster" onClick={() => props.setMovieDetails(props.movieData)}/> </Link>

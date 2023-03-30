@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
-
+const bcrypt = require("bcrypt");
 const userSchema = mongoose.Schema({
         id: {
             type: Number, 
-            required: [true, "Every User Needs An ID"],
             unique: true,
         },
         details: {
@@ -42,6 +41,14 @@ const userSchema = mongoose.Schema({
             required: [false]
         }
     }
-)
+);
 
-module.exports = mongoose.model("User", userSchema);
+userSchema.methods.isValidPassword = async function (formPassword){
+    const user = this; // The schema that we're accessing
+    const hash = user.password_bcrypt;
+    const validate = await bcrypt.compare(formPassword, hash);
+    return validate;
+};
+
+module.exports = mongoose.model("User", userSchema, 'users');
+

@@ -13,8 +13,11 @@ const getAllMovies = asyncHandler(async (req, res) => {
 const getNumMovies = asyncHandler(async (req, res) => {
     // Find the movie limit
     const movieLimit = parseInt(req.params.num);
+    // Retrieve the sorting stuff
+    const { attribute, order } = getSortingDetails();
+    console.log(attribute, order);
     // Return the matching movies within the specified limit
-    const limitedMovies = await Movie.find().limit(movieLimit);
+    const limitedMovies = await Movie.find({[attribute]: order}).limit(movieLimit);
     res.status(200).json(limitedMovies);
 });
 // @desc retrieve movies that fall within the given years range
@@ -23,7 +26,6 @@ const getNumMovies = asyncHandler(async (req, res) => {
 const getMoviesBetweenYears = asyncHandler(async (req, res) => {
     const minYear = req.params.min; 
     const maxYear = req.params.max;
-    console.log(minYear, maxYear);
     minIsGreaterThanMaxCheck(minYear, maxYear, res, "year");
     const yearFilteredMovies = await Movie.find({release_date: { $gt: minYear, $lt: maxYear }}).sort({title: 1});
     noMatchesFoundCheck(yearFilteredMovies, res);
@@ -131,6 +133,12 @@ const invalidValueCheck = (value, res) => {
         res.status(400);
         throw new Error(`The value you inputted: ${value} is invalid. Please only enter positive values...`);
     }
+}
+// Returns the sorting details from a client request
+const getSortingDetails = (req) => {
+    const sortAttribute= req.query.attribute || 'title';
+    const sortOrder = req.query.order === 'asc' ? 1 : -1;
+    return {attribute: sortAttribute, order: sortOrder};
 }
 /* Export all the controller functions */
 module.exports = {

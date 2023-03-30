@@ -57,7 +57,7 @@ function App() {
     localStorage.setItem("genres", JSON.stringify(Object.fromEntries(genres)));
     return genres;
   }
-
+  // Setting up a variable for the loading 
   // Check the movie data 
   useEffect( () => 
     {

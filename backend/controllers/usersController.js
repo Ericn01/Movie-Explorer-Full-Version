@@ -1,39 +1,44 @@
 const bcrypt = require('bcrypt');
-// View / Controller logic for the user login and registration views.
+const User = require('../models/userModel');
+// Controller logic for the user login view.
 
-// Main page request
-const indexView = (req, res) => {
-    res.status(200).render('../views/index.ejs');
-} 
+// @desc retrieves all the users
+// @route GET /api/users/
+// @access Private
+const getAllUsers = async (req, res) => {
+    const users = await User.find({}).sort({id: 1});
+    res.status(200).json(users);
+};
 
-// Login view / page
-const loginView = (req,res) => {
-    res.render('../views/login.ejs')
-}
-
-// Login the user
+// Login the user if the passwords are correct
+// If the user does not already exist in the database, they will be created.
 const loginUser = async (req, res) => {
-    emptyBodyCheck(req.body.text, res)
     const { email, password } = req.body;
-    try{
-        const hashedPassword = await bcrypt.hash(password);
-        res.redirect('/login');
-    } catch (error) {
-        console.log(error);
+    console.log(email, password);
+    let loginErrors = [];
+    // Check to see that the email and password fields are full
+    if (!email || !password){loginErrors.push({message: "Please ensure sure that all fields have values."})};
+    // Make sure the password is at least 5 characters long
+    if (password.length < 5){loginErrors.push({message: "Password should be at least 5 characters long"})};
+    // Check the state errors array
+    if (loginErrors.length > 0){
+        res.render('/login', {
+            loginErrors,
+        });
+    } else{
+        const userResponse = await User.findOne({email: email});
+        const hashedPassword = await bcrypt.hash(password, 10);
+        if (userResponse && userResponse.password === hashedPassword) { // The user is already present in the DB
+            res.redirect('/index');
+        } else{
+            const user = await User.create({email, hashedPassword});
+            await user.save();
+        }
+        
     }
 }
-
-// Checks to see if the body of 
-const emptyBodyCheck = (text, res) => {
-    if (!text) {
-        res.status(500);
-        throw new Error("Please fill out the required fields.");
-    }
-}
-
 
 module.exports = {
-    indexView,
-    loginView,
     loginUser,
+    getAllUsers
 }
