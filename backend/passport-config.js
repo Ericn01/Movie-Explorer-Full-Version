@@ -27,10 +27,8 @@ const loginStrategy = new LocalStrategy(requiredFormOptions, async (email, passw
         return done(err);
     }
 });
-
+passport.use('localLogin', loginStrategy)
 passport.serializeUser( (user, done) => done(null, user.email) );
 passport.deserializeUser( (email, done) => {
-    UserModel.findOne({ email: email }, (err, user) => done(err, user));
+    User.findOne({ email: email }, (err, user) => done(err, user));
 });
-
-module.exports = { loginStrategy };

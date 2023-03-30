@@ -12,9 +12,7 @@
             }
             h1{
                 text-align: center;
-                margin-bottom: 25px;
-                padding-bottom: 15px;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+                margin-left: 15px;
             }
             .form-wrapper{
                 width: 100%;
@@ -68,12 +66,22 @@
                 background-color: #4759a6;
                 cursor: pointer;
             }
+            .top-container{
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+            }
+
         </style>
     </head>
     <body> 
         <section class="form-wrapper">
             <form method="POST" action="/users/login">
-                <h1> Log In</h1>
+                <div class="top-container">
+                    <img src="https://cdn-icons-png.flaticon.com/512/152/152532.png" alt="login" width="28px" height="28px" draggable="false">
+                    <h1> Log In </h1>
+                </div>
                 <div class="input-container email">
                     <label for="email">Email<span class="required-symbol">*</span>: </label>
                     <input type="text" id="email" name="email" value="al@ace.ca" placeholder="Enter Email" required>

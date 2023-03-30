@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
+
 // Controller logic for the user login view.
 
 // @desc retrieves all the users
