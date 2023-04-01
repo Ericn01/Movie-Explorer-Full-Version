@@ -26,7 +26,7 @@
                 border-radius: 10px;
                 width: 35%;
                 max-width: 350px;
-                height: 300px;
+                height: max-content;
                 padding: 10px 25px;
                 box-shadow: 1px 1px 5px darkgray;
             }
@@ -72,7 +72,23 @@
                 margin-bottom: 10px;
                 border-bottom: 1px solid rgba(0, 0, 0, 0.1)
             }
-
+            .small-text{
+                color: gray;
+                font-size: 12px;
+                font-style: italic;
+            }
+            .optional{
+                justify-content: center;
+                margin: 10px 0px;
+            }
+            .guest{
+                text-decoration: underline;
+                cursor: pointer;
+                font-style:normal
+            }
+            .guest:hover{
+                color: blue;
+            }
         </style>
     </head>
     <body> 
@@ -93,8 +109,11 @@
                 <div class="input-container button">
                     <button> Login </button>
                 </div>
+                <div class="input-container optional">
+                    <p class="small-text"> Don't want to log in? <span class="guest"> Browse As a Guest </span> </p>
+                </div>
             </form>
-        </div>
+        </section>
         <% if(typeof errors != 'undefined'){ %>
             <% errors.forEach((err) => { %>
                 <%= err.message %>

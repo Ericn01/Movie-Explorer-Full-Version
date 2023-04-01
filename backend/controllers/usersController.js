@@ -15,7 +15,6 @@ const getAllUsers = async (req, res) => {
 // If the user does not already exist in the database, they will be created.
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
-    console.log(email, password);
     let loginErrors = [];
     // Check to see that the email and password fields are full
     if (!email || !password){loginErrors.push({message: "Please ensure sure that all fields have values."})};
@@ -27,12 +26,15 @@ const loginUser = async (req, res) => {
             loginErrors,
         });
     } else{
+        console.log("Entered password: ", password);
         const userResponse = await User.findOne({email: email});
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10); // Create the hashed password
         if (userResponse && userResponse.password === hashedPassword) { // The user is already present in the DB
             res.redirect('/index');
-        } else{
+        } else{ // userResponse is null, so we create a new user
+            
             const user = await User.create({email, hashedPassword});
+            console.log("User has been created: " + user);
             await user.save();
         }
         

@@ -2,11 +2,11 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/userModel');
 
+// fields for the form.
 const requiredFormOptions = {
     usernameField: 'email',
     passwordField: 'password'
 };
-
 // Strategy for the user validation
 const loginStrategy = new LocalStrategy(requiredFormOptions, async (email, password, done) => {
     try{
@@ -27,6 +27,7 @@ const loginStrategy = new LocalStrategy(requiredFormOptions, async (email, passw
         return done(err);
     }
 });
+// Passport setup 
 passport.use('localLogin', loginStrategy)
 passport.serializeUser( (user, done) => done(null, user.email) );
 passport.deserializeUser( (email, done) => {

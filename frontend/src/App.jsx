@@ -78,7 +78,7 @@ function App() {
       setModalState(newViewState);
     }
   return (
-  <main className='relative'>
+  <main className='relative font-sen'>
     <ModalDialog changeDisplayState={changeModalView} displayState={modalState} />
     <Routes>
       <Route path="/" element={<HomeView movieData={movies} setParentMovieMatches={setMatches}/>} />

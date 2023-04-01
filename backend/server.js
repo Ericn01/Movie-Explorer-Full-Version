@@ -9,7 +9,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require('./passport-config');
 
-
 // Initializing the application and port 
 const app = express();
 const port = process.env.PORT || 7000;
@@ -30,7 +29,7 @@ app.use(
         resave: true,
         saveUninitialized: true
 }));
-app.use(cors()); // Since frontend and backend won't be hosted on the same server, CORS will be enabled
+app.use(cors()); // Since the frontend and backend won't be hosted on the same server, CORS will be enabled
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
@@ -38,12 +37,14 @@ app.use(flash());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
-// Parses form data
+// Parses form data. (Hasn't been working with the login form???)
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 
+// Routes that the application will be using
 app.use('/api/movies', require('./routes/movieRoutes'));
 app.use('/users', require('./routes/usersRoutes'));
 
+// Listen for requests on the env variable port
 app.listen(port, () => console.log(`Server Started on port ${port}`));
 
