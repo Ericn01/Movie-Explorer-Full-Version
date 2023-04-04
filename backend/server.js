@@ -5,7 +5,6 @@ const dotenv     = require("dotenv").config();
 const passport   = require('passport');
 const flash      = require('express-flash');
 const session    = require('express-session');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require('./passport-config');
 
@@ -17,6 +16,10 @@ const connectDB = require('./config/db.js');
 
 // Establish a connection to the database
 connectDB();
+
+// Parse body content 
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 
 // Enabling the app to use EJS as a view engine
 app.set('view engine', 'ejs');
@@ -30,16 +33,17 @@ app.use(
         saveUninitialized: true
 }));
 app.use(cors()); // Since the frontend and backend won't be hosted on the same server, CORS will be enabled
+// passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.use(flash());
 
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-
-// Parses form data. (Hasn't been working with the login form???)
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use((req, res, next) => {
+    res.locals.auth_error = req.flash('auth_error');
+    res.locals.auth_success = req.flash('auth_success');
+    next();
+})
 
 // Routes that the application will be using
 app.use('/api/movies', require('./routes/movieRoutes'));

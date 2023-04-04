@@ -35,6 +35,7 @@ router.get('/ratingsLess/:max', getMoviesBelowRating);
 router.get('/ratingsGreater/:min', getMoviesAboveRating);
 // Same is done with minimum and maximum values for year
 router.get('/yearLess/:max', getMoviesBelowYear);
+// Retrieve movies released before the given year.
 router.get('/yearGreater/:min', getMoviesAboveYear);
 
 // Export router

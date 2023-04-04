@@ -41,10 +41,10 @@
                 border: none;
                 border-bottom: 2px solid lightgray;
             }
-            input:focus{
+                input:focus{
                 border-bottom: 2px solid blue;
             }
-            .required-symbol{
+                .required-symbol{
                 color: red;
                 font-weight: bold;
             }
@@ -77,7 +77,7 @@
                 font-size: 12px;
                 font-style: italic;
             }
-            .optional{
+                .optional{
                 justify-content: center;
                 margin: 10px 0px;
             }
@@ -89,15 +89,44 @@
             .guest:hover{
                 color: blue;
             }
+            .message-container{
+                padding: 10px;
+                margin: 10px 0px;
+                font-size: 13px;
+                border-radius: 5px;
+            }
+            .error{
+                background-color: lightyellow;
+            }
+            .success {
+                background-color: lightgreen;
+            }
         </style>
     </head>
     <body> 
         <section class="form-wrapper">
-            <form method="POST" action="/users/login">
+            <form method="post" action="/users/login">
                 <div class="top-container">
                     <img src="https://cdn-icons-png.flaticon.com/512/152/152532.png" alt="login" width="28px" height="28px" draggable="false">
                     <h1> Log In </h1>
                 </div>
+                <% if(typeof loginErrors != 'undefined'){ %>
+                    <div class="message-container error">
+                        <% loginErrors.forEach((err) => { %>
+                            <%= err.message %>
+                        <% }); %>
+                    </div>
+                <% } %>
+                <% if(auth_error != ''){ %>
+                    <div class="message-container error">
+                        <%= auth_error %>
+                    </div>
+                <% } %>
+                <% if(auth_success != ''){ %>
+                    <div class="message-container success">
+                        <%= auth_success %>
+                    </div>
+                <% } %>
                 <div class="input-container email">
                     <label for="email">Email<span class="required-symbol">*</span>: </label>
                     <input type="text" id="email" name="email" value="al@ace.ca" placeholder="Enter Email" required>
@@ -109,15 +138,7 @@
                 <div class="input-container button">
                     <button> Login </button>
                 </div>
-                <div class="input-container optional">
-                    <p class="small-text"> Don't want to log in? <span class="guest"> Browse As a Guest </span> </p>
-                </div>
             </form>
         </section>
-        <% if(typeof errors != 'undefined'){ %>
-            <% errors.forEach((err) => { %>
-                <%= err.message %>
-            <% }); %>
-        <% } %>
     </body>
 </html>

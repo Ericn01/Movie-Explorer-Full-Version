@@ -1,1 +1,78 @@
-<h1> Login Succesful!... Redirecting You to</h1>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>User Login Page</title>
+        <style>
+            body{
+                background-color: #fafafa;
+                font-family: Arial, Helvetica, sans-serif;
+                background-image: linear-gradient(navy, violet);
+                height: 100vh;
+                }
+            h1{
+                text-align: center;
+                margin-left: 15px;
+            }
+            .form-wrapper{
+                width: 100%;
+                height: 95%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            form{
+                background-color: #fafafa;
+                border-radius: 10px;
+                width: 35%;
+                max-width: 350px;
+                height: max-content;
+                padding: 10px 25px;
+                box-shadow: 1px 1px 5px darkgray;
+            }
+            .button{
+                justify-content: center;
+            }
+            button{
+                margin-top: 10px;
+                padding: 7.5px 10px;
+                color: white;
+                background-color: #677acf;
+                border-radius: 15px;
+                border: none;
+                font-weight: bold;
+            }
+            button:hover{
+                transition: 0.5s ease-in;
+                background-color: #4759a6;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body> 
+        <section class="form-wrapper">
+            <section class="form-wrapper">
+            <form method="get" action="/users/logout">
+                <div class="top-container">
+                    <h1> User was logged in successfully </h1>
+                </div>
+                <% if(auth_error != ''){ %>
+                    <div class="message-container error">
+                        <%= auth_error %>
+                    </div>
+                <% } %>
+                <% if(auth_success != ''){ %>
+                    <div class="message-container success">
+                        <%= auth_error %>
+                    </div>
+                <% } %>
+                <div class="input-container button">
+                    <button> Logout </button>
+                </div>
+                <a href="http://localhost:5173">Go to React Frontend</a>
+
+            </form>
+        </section>
+        
+    </body>
+</html>

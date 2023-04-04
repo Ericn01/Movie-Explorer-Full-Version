@@ -2,27 +2,25 @@ const asyncHandler = require('express-async-handler');
 const Movie = require('../models/movieModel')
 // @desc retrieves the first num movies
 // @route GET /api/movies/
-// @access Private
+// @access Public
 const getAllMovies = asyncHandler(async (req, res) => {
     const movies = await Movie.find({}).sort({title: 1});
     res.status(200).json(movies);
 });
 // @desc retrieves the first num movies
 // @route GET /api/movies/num
-// @access Private
+// @access Public
 const getNumMovies = asyncHandler(async (req, res) => {
     // Find the movie limit
     const movieLimit = parseInt(req.params.num);
     // Retrieve the sorting stuff
-    const { attribute, order } = getSortingDetails();
-    console.log(attribute, order);
     // Return the matching movies within the specified limit
     const limitedMovies = await Movie.find({[attribute]: order}).limit(movieLimit);
     res.status(200).json(limitedMovies);
 });
 // @desc retrieve movies that fall within the given years range
 // @route GET /api/movies/year/min/max
-// @access Private
+// @access Public
 const getMoviesBetweenYears = asyncHandler(async (req, res) => {
     const minYear = req.params.min; 
     const maxYear = req.params.max;
@@ -33,7 +31,7 @@ const getMoviesBetweenYears = asyncHandler(async (req, res) => {
 });
 // @desc retrieve movies that fall within the given years range
 // @route GET /api/movies/ratings/min/max
-// @access Private
+// @access Public
 const getMoviesBetweenRatings = asyncHandler(async (req, res) => {
     const min = Number(req.params.min);
     const max = Number(req.params.max);
@@ -44,7 +42,7 @@ const getMoviesBetweenRatings = asyncHandler(async (req, res) => {
 });
 // @desc retrieves movies that have a title that includes the given text
 // @route GET /api/movies/title/text
-// @access Private
+// @access Public
 const getMoviesByText = asyncHandler(async (req, res) => {
     const text = req.params.text.toLowerCase();
     const titleFilteredMovies = await Movie.find({title: { $regex: `.*${text}.*`, $options: 'i' } });
@@ -53,7 +51,7 @@ const getMoviesByText = asyncHandler(async (req, res) => {
 });
 // @desc retrieves movies that have a title that includes the given text
 // @route GET /api/movies/genre/name
-// @access Private
+// @access Public
 const getMoviesByGenre = asyncHandler(async (req, res) => {
     const genreName = req.params.name;
     // For this DB query, we need to access movieObj[details][genres][name].
@@ -63,7 +61,7 @@ const getMoviesByGenre = asyncHandler(async (req, res) => {
 })
 // @desc retrieves the movie that has the given ID (not TMDB)
 // @route GET /api/movies/id
-// @access Private
+// @access Public
 const getMovieById = asyncHandler(async (req, res) => {
     const id = parseInt(req.params.id);
     const movie = await Movie.findOne({id: id});
@@ -72,7 +70,7 @@ const getMovieById = asyncHandler(async (req, res) => {
 });
 // @desc retrieves the movie that has the given ID (not TMDB)
 // @route GET /api/movies/ratingsLess/:max
-// @access Private
+// @access Public
 const getMoviesBelowRating = asyncHandler(async (req, res) => {
     const max = Number(req.params.max);
     invalidValueCheck(max, res); // Checks for NaN or a rating <0
@@ -83,7 +81,7 @@ const getMoviesBelowRating = asyncHandler(async (req, res) => {
 
 // @desc retrieves the movie(s) that have an average rating less than the given value (minimum)
 // @route GET /api/movies/ratingsGreater/:min
-// @access Private
+// @access Public
 const getMoviesAboveRating = asyncHandler(async (req, res) => {
     const min = Number(req.params.min);
     invalidValueCheck(min, res); // Checks for NaN or a rating <0
@@ -94,7 +92,7 @@ const getMoviesAboveRating = asyncHandler(async (req, res) => {
 
 // @desc retrieves the movie(s) that were released before the given date.
 // @route GET /api/movies/yearLess/:max
-// @access Private
+// @access Public
 const getMoviesBelowYear = asyncHandler(async (req, res) => {
     const maxYear = req.params.max; // Maximum date/year
     const matches = await Movie.find({release_date: {$lt: maxYear}}).sort({title: 1});
@@ -104,7 +102,7 @@ const getMoviesBelowYear = asyncHandler(async (req, res) => {
 
 // @desc retrieves the movie(s) that were release after the given date.
 // @route GET /api/movies/yearGreater/:min
-// @access Private
+// @access Public
 const getMoviesAboveYear = asyncHandler(async (req, res) => {
     const minYear = req.params.min; // Minimum date/year
     const matches = await Movie.find({release_date: {$gt: minYear}}).sort({title: 1});
