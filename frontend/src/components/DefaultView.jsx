@@ -129,7 +129,6 @@ const MovieFilter = ({genresList, setFilterResults, filterIsShown, changeColumnO
             else{
                 alert("Please check a filter to begin!");
             }
-            console.log(queryEndpoint);
             queryMatches = await fetchFilterData(queryEndpoint);
             setFilterResults(queryMatches);
         }
@@ -218,9 +217,12 @@ const RetrieveNumMoviesFilter = (props) => {
                 <span className="text-sm font-medium text-gray-800 uppercase"> Number of Movies </span>
                 <aside className="ml-10 flex">
                     <span className='mr-3 text-gray-600 font-semibold'> 1 </span>
-                    <input className='w-[50%] h-[20px]' title={retrievalValue} type="range" max={200} min={1} name="numMoviesRetrieved" value={retrievalValue} onChange={props.checkInputData} />
-                    <span className='ml-3 text-gray-600 font-semibold'> 200 </span>
+                    <input className='w-[50%] h-[20px]' title={retrievalValue} type="range" max={150} min={1} name="numMoviesRetrieved" value={retrievalValue} onChange={props.checkInputData} />
+                    <span className='ml-3 text-gray-600 font-semibold'> 150 </span>
                 </aside>
+                <div className='text-sm italic mt-2 flex justify-center mr-[65px]'> 
+                    First {retrievalValue ? retrievalValue : "{n}"} Movies
+                </div>
             </div>
     );
 }
@@ -291,7 +293,7 @@ const MovieMatches = (props) => {
             <section className='mx-8'>
                 <div className='max-h-[85vh] overflow-y-scroll rounded-md shadow-md'>
                 <h2 className='text-center text-lg tracking-tighter font-semibold mb-2 text-gray-700'> {` We Found ${matchesData.length} Matches! `} </h2>
-                <table className="w-full basis-1/2"> 
+                <table className="w-full basis-1/2 table-fixed max-w-[1000px]"> 
                     <TableHead columns={
                         [
                             {name: "Poster", id:"poster", sortable:false}, 
@@ -323,11 +325,17 @@ const MovieMatches = (props) => {
 }
 /* Table headers are contained here. */
 const TableHead = ({columns, sortColumnOrder}) => {  
+    const pixelDiscrepancyByAttribute = {'title': 60, 'year': 60, 'rating': 90, 'popularity': 110}
     return (
         <thead className='bg-violet-300 border-b-2 border-gray-200'>
             <tr>
                 {columns.map((column) => column.sortable ? 
-                <th key={column.id} className="p-4 text-md font-bold tracking-tight hover:cursor-pointer text-left relative" id={column.id} onClick={() => changeColumnOrder(column.id)}title="Sort Functionality Coming Soon!"> {column.name} <span className='flex-col absolute left-[20px] bottom-2 m-auto'> <div> ▲ </div>  <div> ▼ </div>  </span></th> : 
+                <th key={column.id} className="p-4 text-md font-bold tracking-tight hover:cursor-pointer text-left relative mr-2" id={column.id} onClick={() => changeColumnOrder(column.id)} title="Sort Functionality Coming Soon!"> {column.name} 
+                    <span className={`flex-col absolute  bottom-1 m-auto`}> 
+                        <div> ▲ </div>  
+                        <div> ▼ </div>  
+                    </span> 
+                </th> : 
                 <th key={column.id} className="p-4 text-md font-bold text-left" id={column.id}> {column.name} </th>)}
             </tr>
         </thead>

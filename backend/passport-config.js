@@ -2,13 +2,14 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/userModel');
 const bcrypt = require('bcrypt');
+const { match } = require('assert');
 
 
 // fields for the form.
 const options = {
     usernameField: 'email',
     passwordField: 'password',
-    passReqToCallback: true
+    passReqToCallback: true,
 };
 // Strategy for the user validation
 const loginStrategy = new LocalStrategy(options, async (req, email, password, done) => {

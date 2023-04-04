@@ -42,21 +42,22 @@ function App() {
     setMovieDetails(movie);
   }
   // Genres list setup
-  let genres = JSON.parse(localStorage.getItem("genres"));
-  async function getGenresList(movieData){
-    let genres = new Map();
-    movieData.map((m) => { 
-      const genreObject = m.details.genres;
-      if (genreObject !== null){
-        genreObject.forEach( (genreEntry) => {
-          const genreIsSet = genres.has(genreEntry.id);
-          genreIsSet === false ? genres.set(genreEntry.id, genreEntry.name) : ""}
-        )
-      }
-    });
-    localStorage.setItem("genres", JSON.stringify(Object.fromEntries(genres)));
-    return genres;
-  }
+  let genres = JSON.parse(localStorage.getItem("genres")) || getGenresList(movies);
+async function getGenresList(movieData){
+  const genres = movieData.reduce((acc, m) => {
+    const genreObject = m.details.genres;
+    if (genreObject !== null) {
+      genreObject.forEach(genreEntry => {
+        if (!acc.has(genreEntry.id)) {
+          acc.set(genreEntry.id, genreEntry.name);
+        }
+      });
+    }
+    return acc; // accumulates genres as it goes through the movie list
+  }, new Map());
+  localStorage.setItem("genres", JSON.stringify(Object.fromEntries(genres)));
+  return genres;
+} 
   // Setting up a variable for the loading 
   // Check the movie data 
   useEffect( () => 
@@ -78,7 +79,7 @@ function App() {
       setModalState(newViewState);
     }
   return (
-  <main className='relative font-sen'>
+  <main className='relative font-poppins'>
     <ModalDialog changeDisplayState={changeModalView} displayState={modalState} />
     <Routes>
       <Route path="/" element={<HomeView movieData={movies} setParentMovieMatches={setMatches}/>} />

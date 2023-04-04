@@ -3,9 +3,8 @@ const ensureAuthenticated = (req, res, next) => {
         console.log("authenticated");
         return next();
     }
-    console.log("authentication failed");
-    req.flash('info', 'Please log in to access that resource');
-    res.render('login', {user: req.body});
+    req.flash('auth_error', 'Please log in to access that resource');
+    res.render('login', {user: req.body, auth_error: req.flash('auth_error')});
 }
 
 module.exports = {ensureAuthenticated};

@@ -13,9 +13,8 @@ const getAllMovies = asyncHandler(async (req, res) => {
 const getNumMovies = asyncHandler(async (req, res) => {
     // Find the movie limit
     const movieLimit = parseInt(req.params.num);
-    // Retrieve the sorting stuff
     // Return the matching movies within the specified limit
-    const limitedMovies = await Movie.find({[attribute]: order}).limit(movieLimit);
+    const limitedMovies = await Movie.find({}).limit(movieLimit);
     res.status(200).json(limitedMovies);
 });
 // @desc retrieve movies that fall within the given years range

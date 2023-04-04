@@ -4,9 +4,10 @@
         <meta charset="utf-8">
         <title>User Login Page</title>
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
             body{
                 background-color: #fafafa;
-                font-family: Arial, Helvetica, sans-serif;
+                font-family: 'Poppins', sans-serif;
                 background-image: linear-gradient(navy, violet);
                 height: 100vh;
             }
@@ -16,7 +17,7 @@
             }
             .form-wrapper{
                 width: 100%;
-                height: 95%;
+                height: 75%;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -39,6 +40,7 @@
             input{
                 outline: none;
                 border: none;
+                background-color: transparent;
                 border-bottom: 2px solid lightgray;
             }
                 input:focus{
@@ -77,7 +79,7 @@
                 font-size: 12px;
                 font-style: italic;
             }
-                .optional{
+            .optional{
                 justify-content: center;
                 margin: 10px 0px;
             }
@@ -101,9 +103,44 @@
             .success {
                 background-color: lightgreen;
             }
+            .title{
+                font-size: 32px;
+                font-weight: bold;
+                color: white;
+                text-align: center;
+                margin-top: 20px;
+                text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+                margin-left: 0px;
+            }
+            footer {
+                color: white;
+                padding: 20px;
+                text-align: center;
+                font-size: 20px;
+                margin-top: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+                text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+                font-weight: bold;
+            }
+            footer a {
+                
+                color: white;
+                text-decoration: none;
+            }
+            footer a:hover {
+                color:blue;
+                text-decoration: underline;
+            }
         </style>
     </head>
     <body> 
+        <header>
+            <nav class="navbar">
+                <h1 class="title"> COMP4513 Assignment 2</h1>
+            </nav>
+        </header>
         <section class="form-wrapper">
             <form method="post" action="/users/login">
                 <div class="top-container">
@@ -129,16 +166,20 @@
                 <% } %>
                 <div class="input-container email">
                     <label for="email">Email<span class="required-symbol">*</span>: </label>
-                    <input type="text" id="email" name="email" value="al@ace.ca" placeholder="Enter Email" required>
+                    <input type="text" id="email" name="email" value="al@ace.ca" placeholder="Enter Email" autocomplete="off" required>
                 </div>
                 <div class="input-container password">
                     <label for="password">Password<span class="required-symbol">*</span>: </label>
-                    <input type="password" id="password" name="password" value="mypassword" placeholder="Enter Password" required>
+                    <input type="password" id="password" name="password" value="mypassword" placeholder="Enter Password" autocomplete="off" required>
                 </div>
                 <div class="input-container button">
                     <button> Login </button>
                 </div>
             </form>
         </section>
+        <footer>
+            <p> Eric Nielsen </p>
+            <a href="https://github.com/Ericn01/Movie-Explorer-Full-Version" target="_blank">Github Repository</a>
+        </footer>
     </body>
 </html>
